@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mapred>
+    <!-- profile -->
+    <baseId>0aa126b9d518f962778b4eca10965dba</baseId>
+    <projectId>2326</projectId>
+    <resourceName>mapreduce</resourceName>
+    <idePath>工作流/mapreduce</idePath>
+
+    <!-- classes -->
+    <jobLauncher>zcf.mapreduce.JobLauncher</jobLauncher>
+    <mapper>zcf.mapreduce.MyMapper</mapper>
+    <reducer>zcf.mapreduce.MyReducer</reducer>
+    <combiner></combiner>
+
+    <!--task-->
+    <mapOutputKey>user_id:string,item_id:string</mapOutputKey>
+    <mapOutputValue>cnt:bigint</mapOutputValue>
+    <!--
+    <partitionColumns>col1,col2</partitionColumns>
+    <outputKeySortColumns>col1,col2</outputKeySortColumns>
+    <outputKeySortOrders>ASC,DESC</outputKeySortOrders>
+    <outputGroupingColumns>col1,col2</outputGroupingColumns>
+    <numReduceTask>8</numReduceTask>
+    <memoryForMapTask>2048</memoryForMapTask>
+    <memoryForReduceTask>2048</memoryForReduceTask>
+    -->
+
+    <!-- tables -->
+    <inputTables>
+        <table>
+        	<name>zcf_temp</name></table>
+    </inputTables>
+    <outputTable>
+        <name>zcf_output</name>
+    </outputTable>
+</mapred>

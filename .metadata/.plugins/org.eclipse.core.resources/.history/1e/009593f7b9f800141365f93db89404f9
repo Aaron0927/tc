@@ -1,0 +1,67 @@
+package zcf.mapreduce;
+
+import com.aliyun.odps.data.Record;
+import com.aliyun.odps.mapred.Reducer;
+
+import java.io.IOException;
+import java.util.Iterator;
+
+import java.util.Map;
+import java.util.TreeMap;
+
+/**
+ * Reducer模板。请用真实逻辑替换模板内容
+ */
+public class MyReducer implements Reducer {
+    private Record result;
+    // 初始化
+    public void setup(TaskContext context) throws IOException {
+        result = context.createOutputRecord();
+    }
+
+    public void reduce(Record key, Iterator<Record> values, TaskContext context) throws IOException {
+   /*     long count = 0;
+        while (values.hasNext()) {
+            Record val = values.next();
+            count += val.getBigint(0);
+        }
+        result.set(0, key.get(0));
+        result.set(1, count);
+        context.write(result);*/
+    	
+    	Map<String, Long[]> typeCounter = new TreeMap<String, Long[]>();
+    	while (values.hasNext()) {
+    		Record val = values.next();
+    		String time = val.getString("time");
+    		int behavior_type = val.getBigint("behavior_type").intValue();
+    		if (typeCounter.containsKey(time)) {
+    			typeCounter.get(time)[behavior_type - 1] ++;	
+    		} else {
+    			Long[] counter = new Long[]{0L, 0L, 0L, 0L};
+    			counter[behavior_type - 1] ++;
+    			typeCounter.put(time, counter);
+    		}
+    	}
+    	
+    	result.set(0, key.getString("user_id"));
+    	result.set(1, key.getString("item_id"));
+    	
+    	Long sumClicks = 0L;
+    	for (String time : typeCounter.keySet()) {
+    		result.set(2, time);
+    		//result.set(3, typeCounter.get(time)[1]);
+    		//result.set(4, typeCounter.get(time)[1]);
+    		//result.set(5, typeCounter.get(time)[2]);
+    		//result.set(6, typeCounter.get(time)[3]);
+    		sumClicks += typeCounter.get(time)[0];
+    		result.set(7, sumClicks);
+    		context.write(result);
+    	}
+    	
+    	
+    }
+    // 收尾工作
+    public void cleanup(TaskContext arg0) throws IOException {
+
+    }
+}

@@ -1,0 +1,127 @@
+package zcf.mapreduce;
+
+import com.aliyun.odps.data.Record;
+import com.aliyun.odps.mapred.Reducer;
+
+import java.io.IOException;
+import java.util.Iterator;
+
+import java.util.Map;
+import java.util.TreeMap;
+// 下面是用于时间转换
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+/**
+ * Reducer模板。请用真实逻辑替换模板内容
+ */
+public class MyReducer implements Reducer {
+    private Record result;
+    // 初始化
+    public void setup(TaskContext context) throws IOException {
+        result = context.createOutputRecord();
+    }
+
+    public void reduce(Record key, Iterator<Record> values, TaskContext context) throws IOException {
+   /*     long count = 0;
+        while (values.hasNext()) {
+            Record val = values.next();
+            count += val.getBigint(0);
+        }
+        result.set(0, key.get(0));
+        result.set(1, count);
+        context.write(result);*/
+    	
+    	Map<String, Long[]> typeCounter = new TreeMap<String, Long[]>();
+    	while (values.hasNext()) {
+    		Record val = values.next();
+    		// time format "2014-12-03 03"
+    		// 先提取每一天三种行为数目
+    		// 截取到日期
+    		String time = val.getString("time").substring(0, 10);
+    		int behavior_type = val.getBigint("behavior_type").intValue();
+    		if (typeCounter.containsKey(time)) {
+    			typeCounter.get(time)[behavior_type - 1] ++;	
+    		} else {
+    			Long[] counter = new Long[]{0L, 0L, 0L, 0L};
+    			counter[behavior_type - 1] ++;
+    			typeCounter.put(time, counter);
+    		}
+    	}
+    	
+    	result.set(0, key.getString("user_id"));
+    	//result.set(1, key.getString("item_id"));
+    	
+    	//Long sumClicks = 0L;
+    	Long day1_clicks = 0L;
+    	Long day2_clicks = 0L;
+    	Long day3_clicks = 0L;
+    	Long day1_collections = 0L;
+    	Long day2_collections = 0L;
+    	Long day3_collections = 0L;
+    	Long day1_carts = 0L;
+    	Long day2_carts = 0L;
+    	Long day3_carts = 0L;
+    	Long day1_buys = 0L;
+    	Long day2_buys = 0L;
+    	Long day3_buys = 0L;
+    	for (String time : typeCounter.keySet()) {
+    		//result.set(2, time);
+    		//result.set(3, typeCounter.get(time)[1]);
+    		//result.set(4, typeCounter.get(time)[1]);
+    		//result.set(5, typeCounter.get(time)[2]);
+    		//result.set(6, typeCounter.get(time)[3]);
+    		//sumClicks += typeCounter.get(time)[0];
+    		//result.set(2, sumClicks);
+    		//context.write(result);
+    		if (time.equals("2014-11-18")) {
+    			
+    		} else if (time.equals("2014-11-19")) {
+    			result.set(2, );
+    		} else if (time.equals("2014-11-20")) {
+    			// 前1天点击
+    			day1_clicks = typeCounter.get(time)[0];
+    			result.set(1, day1_clicks);
+    			// 前1天收藏
+    			day1_collections = typeCounter.get(time)[1];
+    			result.set(1, day1_collections);
+    			// 前1天加购
+    			day1_carts = typeCounter.get(time)[2];
+    			result.set(1, day1_carts);
+    			// 前1天购买
+    			day1_buys = typeCounter.get(time)[3];
+    			result.set(1, day1_buys);
+    			
+    		}
+    	}
+    	
+    	
+    }
+    /**
+     * 比较时间大小函数
+     * @param Date1
+     * @param Date2
+     * @return Date1大于Date2返回1，否则返回0
+     */
+    public static int compareTime(String Date1, String Date2) {
+    	DateFormat df = new SimpleDateFormat("yyyy-MM-dd hh");
+    	try {
+    		Date dt1 = df.parse(Date1);
+    		Date dt2 = df.parse(Date2);
+    		if (dt1.getTime() > dt2.getTime()) {
+    			return 1;
+    		} else {
+    			return 0;
+    		}
+    	} catch (Exception ex) {
+    		ex.printStackTrace();
+    	}
+    	return 0;
+    }
+    
+    // 收尾工作
+    public void cleanup(TaskContext arg0) throws IOException {
+
+    }
+}

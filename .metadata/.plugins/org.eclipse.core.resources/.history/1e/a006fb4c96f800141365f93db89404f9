@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<udf>
+    <!-- profile -->
+    <baseId>d2ad4bc5c4be54d28f3e40b98bd33f6a</baseId>
+    <projectId>2227</projectId>
+    <resourceName>udf</resourceName>
+    <functionName>myudf</functionName>
+    <idePath>工作流/zcf/udf</idePath>
+
+    <!-- classes -->
+    <className>zcf.udf.MyUDF</className>
+</udf>
